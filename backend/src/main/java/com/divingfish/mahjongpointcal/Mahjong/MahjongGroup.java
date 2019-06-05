@@ -464,6 +464,8 @@ public class MahjongGroup {
                 throw new YakuException("枪杠情况下无法自摸！");
             } else if (consumedTiles.contains(ronTile)) {
                 throw new YakuException("枪杠牌无法被杠出！");
+            } else if (isHedi) {
+                throw new YakuException("河底无法开杠！");
             }
             this.yakus.add(10);
             this.fan += 1;
@@ -475,6 +477,10 @@ public class MahjongGroup {
         if (isLingshang) {
             if (!isTsumo) {
                 throw new YakuException("岭上开花必须自摸！");
+            } else if (isHaidi) {
+                throw new YakuException("岭上无法海底！");
+            } else if (isYifa) {
+                throw new YakuException("岭上无法一发！");
             } else {
                 boolean flag = false;
                 for (Mianzi m : mianzis) {
@@ -494,6 +500,8 @@ public class MahjongGroup {
                 throw new YakuException("双立直应处于立直状态！");
             } else if (isQiangGang) {
                 throw new YakuException("双立直无法复合枪杠！（为什么呢？）");
+            } else if (isYifa && isHaidi) {
+                throw new YakuException("双立直无法一发自摸海底！");
             }
             this.yakus.add(12);
             this.yakus.remove(new Integer(1));
@@ -837,6 +845,8 @@ public class MahjongGroup {
         if (isTianhe) {
             if (!isInner) {
                 throw new YakuException("天和必须门前清！");
+            } else if (selfWind != 0) {
+                throw new YakuException("只有亲家才能天和！");
             } else if (!isTsumo) {
                 throw new YakuException("天和必须自摸！");
             } else if (reached) {
@@ -856,6 +866,8 @@ public class MahjongGroup {
         if (isDihe) {
             if (!isInner) {
                 throw new YakuException("地和必须门前清！");
+            } else if (selfWind == 0) {
+                throw new YakuException("只有子家才能地和！");
             } else if (!isTsumo) {
                 throw new YakuException("地和必须自摸！");
             } else if (reached) {

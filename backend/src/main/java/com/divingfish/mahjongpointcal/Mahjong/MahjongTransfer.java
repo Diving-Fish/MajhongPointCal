@@ -261,12 +261,14 @@ public class MahjongTransfer {
         if (sevenPairs != null) {
             sevenPairs.ronTile = ronTile;
             sevenPairs.aka = aka;
+            sevenPairs.consumedTiles = consumedTiles;
             mahjongGroups.add(sevenPairs);
         }
         MahjongGroup thirteenOrphans = thirteenOrphans();
         if (thirteenOrphans != null) {
             thirteenOrphans.ronTile = ronTile;
             thirteenOrphans.aka = aka;
+            thirteenOrphans.consumedTiles = consumedTiles;
             mahjongGroups.add(thirteenOrphans);
         }
         Set<List<Integer>> innerLists = finalTiles();
