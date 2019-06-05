@@ -17,7 +17,7 @@ import java.util.Set;
 @RestController
 @EnableAutoConfiguration
 public class Controller {
-    @GetMapping("/cal")
+    @RequestMapping(value = "/cal", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject caldetail(@RequestBody JSONObject requestBody) {
         JSONObject jsonObject = new JSONObject();
