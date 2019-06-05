@@ -138,17 +138,19 @@
                 <div style="display: flex; width: fit-content; margin: 20px auto;">
                     <button @click="send" style="width: 200px; height: 40px; border-radius: 4px; font-size: 20px">计算</button>
                 </div>
-                <div v-for="yaku in result.data.yakus" style="display: flex; width: fit-content; margin: 10px auto;">
-                    <div class="col1">{{ getYakuInfo(yaku, result.data.inner)[0] }}</div>
-                    <div class="col2">{{ getYakuInfo(yaku, result.data.inner)[1] }}番</div>
-                </div>
-                <div style="display: flex; width: fit-content; margin: 10px auto; border-top: 2px solid black">
-                    <div class="col1">合计</div>
-                    <div class="col2">{{ result.data.fu }}符{{result.data.fan}}番</div>
-                </div>
-                <div style="display: flex; width: fit-content; margin: 10px auto;">
-                    <div class="col1">得点</div>
-                    <div class="col2">{{ (result.data.isQin) ? ((result.data.tsumo) ? up(result.data.perPoint * 2) + "All" : up(result.data.perPoint * 6)) : ((result.data.tsumo) ? up(result.data.perPoint) + "-" + up(result.data.perPoint * 2): up(result.data.perPoint * 4))  }} </div>
+                <div>
+                    <div v-for="yaku in result.data.yakus" style="display: flex; width: fit-content; margin: 10px auto;">
+                        <div class="col1">{{ getYakuInfo(yaku, result.data.inner)[0] }}</div>
+                        <div class="col2">{{ getYakuInfo(yaku, result.data.inner)[1] }}番</div>
+                    </div>
+                    <div style="display: flex; width: fit-content; margin: 10px auto; border-top: 2px solid black">
+                        <div class="col1">合计</div>
+                        <div class="col2">{{ result.data.fu }}符{{result.data.fan}}番</div>
+                    </div>
+                    <div style="display: flex; width: fit-content; margin: 10px auto;">
+                        <div class="col1">得点</div>
+                        <div class="col2">{{ (result.data.isQin) ? ((result.data.tsumo) ? up(result.data.perPoint * 2) + "All" : up(result.data.perPoint * 6)) : ((result.data.tsumo) ? up(result.data.perPoint) + "-" + up(result.data.perPoint * 2): up(result.data.perPoint * 4))  }} </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -162,6 +164,7 @@
                     innerdora: "",
                     reach: false,
                     tsumo: false,
+                    status: 200,
                     
                     selfwind: 0,
                     placewind: 0,
@@ -202,28 +205,31 @@
                 },
                 methods: {
                     send() {
-                        console.log
                         let that = this;
-                        axios.get("http://47.100.50.175:8080/cal", {
-                            data : {
-                                inner: that.inner,
-                                outer: that.outer,
-                                dora: that.dora,
-                                innerdora: that.innerdora,
-                                reach: that.reach,
-                                tsumo: that.tsumo,
-                                selfwind: that.selfwind,
-                                placewind: that.placewind,
-                                yifa: that.yifa,
-                                haidi: that.haidi,
-                                hedi: that.hedi,
-                                lingshang: that.lingshang,
-                                qianggang: that.qianggang,
-                                wreach: that.wreach,
-                                tianhe: that.tainhe,
-                                dihe: that.dihe
+                        axios.post("http://localhost:8000/cal", {
+                                "inner": that.inner,
+                                "outer": that.outer,
+                                "dora": that.dora,
+                                "innerdora": that.innerdora,
+                                "reach": that.reach,
+                                "tsumo": that.tsumo,
+                                "selfwind": that.selfwind,
+                                "placewind": that.placewind,
+                                "yifa": that.yifa,
+                                "haidi": that.haidi,
+                                "hedi": that.hedi,
+                                "lingshang": that.lingshang,
+                                "qianggang": that.qianggang,
+                                "wreach": that.wreach,
+                                "tianhe": that.tainhe,
+                                "dihe": that.dihe
+                        }).then(response => {
+                            if (response.data.status != 200) {
+                                window.alert("请求有误！");
+                            } else {
+                                that.result = response.data;
                             }
-                        }).then(response => that.result = response.data);
+                        });
                     },
                     up(num) {
                         return Math.ceil(num / 100) * 100;
