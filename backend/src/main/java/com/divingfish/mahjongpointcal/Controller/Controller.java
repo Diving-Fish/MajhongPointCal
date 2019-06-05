@@ -45,21 +45,18 @@ public class Controller {
         int placewind = 0, selfwind = 0;
         boolean yifa = false, haidi = false, hedi = false, lingshang = false,
                 qianggang = false, wreach = false, tianhe = false, dihe = false;
-        try {
-            placewind = requestBody.getInt("placewind");
-            selfwind = requestBody.getInt("selfwind");
 
-            yifa = requestBody.getBoolean("yifa");
-            haidi = requestBody.getBoolean("haidi");
-            hedi = requestBody.getBoolean("hedi");
-            lingshang = requestBody.getBoolean("lingshang");
-            qianggang = requestBody.getBoolean("qianggang");
-            wreach = requestBody.getBoolean("wreach");
-            tianhe = requestBody.getBoolean("tianhe");
-            dihe = requestBody.getBoolean("dihe");
-        } catch (JSONException e) {
+        placewind = requestBody.getInt("placewind");
+        selfwind = requestBody.getInt("selfwind");
 
-        }
+        yifa = requestBody.getBoolean("yifa");
+        haidi = requestBody.getBoolean("haidi");
+        hedi = requestBody.getBoolean("hedi");
+        lingshang = requestBody.getBoolean("lingshang");
+        qianggang = requestBody.getBoolean("qianggang");
+        wreach = requestBody.getBoolean("wreach");
+        tianhe = requestBody.getBoolean("tianhe");
+        dihe = requestBody.getBoolean("dihe");
 
         String ronTile = inner.substring(inner.length() - 2);
         List<String> strings = Arrays.asList(outer.split(" "));

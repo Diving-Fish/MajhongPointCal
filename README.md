@@ -1,6 +1,6 @@
 # MajhongPointCal
 
-已开放后端查询，URL：`http://47.100.50.175:8000/cal`
+已开放后端查询，URL(*Post*)：`http://47.100.50.175:8000/cal`
 
 发送的RequestBody格式为json，具体如下：
 ```
