@@ -175,29 +175,6 @@ public class MahjongGroup {
         return ((i - 1) / 100 + 1) * 100;
     }
 
-    private void output() {
-        Integer[] ids = {1, 2, 3, 4, 5, 6, 71, 72, 73, 74, 75, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26};
-        String[] names = {"立直", "一发", "门前清自摸和", "平和", "断幺九", "一杯口", "役牌：场风牌", "役牌：自风牌", "役牌：白", "役牌：发", "役牌：中", "海底捞月", "河底捞鱼", "枪杠", "岭上开花", "两立直", "七对子", "一气通贯", "三色同顺", "混全带幺九", "三色同刻", "三暗刻", "对对和", "小三元", "混老头", "三杠子", "混一色", "纯全带幺九", "二杯口", "清一色"};
-        int[] fan_mq = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 6};
-        int[] fan_fl = {0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 0, 5};
-        List<Integer> idList = Arrays.asList(ids);
-        for (Integer yaku : yakus) {
-            int index = idList.indexOf(yaku);
-            if (isInner) {
-                System.out.println(names[index] + "    " + fan_mq[index] + "番");
-            } else {
-                System.out.println(names[index] + "    " + fan_fl[index] + "番");
-            }
-        }
-        System.out.println("------------------------");
-        System.out.println("合计："+ fu + "符" + fan + "番");
-        if (!isTsumo) {
-            System.out.println("亲家/子家：" + up(perPoint * 6) + " / " + up(perPoint * 4));
-        } else {
-            System.out.println("亲家/子家：" + up(perPoint * 2) + "All / " + up(perPoint) + "-" + up(perPoint * 2));
-        }
-    }
-
     private void calFu() {
         int difu = 20;
         if (type == 2) {
@@ -591,7 +568,7 @@ public class MahjongGroup {
                         int[] array = {a.startTile / 10, b.startTile / 10, c.startTile / 10};
                         Arrays.sort(array);
                         if (Arrays.equals(array, new int[] {1, 2, 3})) {
-                            yakus.add(16);
+                            yakus.add(17);
                             fan += 2;
                         }
                     }
