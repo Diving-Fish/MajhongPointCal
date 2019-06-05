@@ -204,23 +204,27 @@
                     send() {
                         console.log
                         let that = this;
-                        axios.get("http://47.100.50.175/cal", {
-                            inner: that.inner,
-                            outer: that.outer,
-                            dora: that.dora,
-                            innerdora: that.innerdora,
-                            reach: that.reach,
-                            tsumo: that.tsumo,
-                            selfwind: that.selfwind,
-                            placewind: that.placewind,
-                            yifa: that.yifa,
-                            haidi: that.haidi,
-                            hedi: that.hedi,
-                            lingshang: that.lingshang,
-                            qianggang: that.qianggang,
-                            wreach: that.wreach,
-                            tianhe: that.tainhe,
-                            dihe: that.dihe
+                        axios({
+                            method: "get",
+                            url: "http://47.100.50.175:8080/cal",
+                            data: {
+                                inner: that.inner,
+                                outer: that.outer,
+                                dora: that.dora,
+                                innerdora: that.innerdora,
+                                reach: that.reach,
+                                tsumo: that.tsumo,
+                                selfwind: that.selfwind,
+                                placewind: that.placewind,
+                                yifa: that.yifa,
+                                haidi: that.haidi,
+                                hedi: that.hedi,
+                                lingshang: that.lingshang,
+                                qianggang: that.qianggang,
+                                wreach: that.wreach,
+                                tianhe: that.tainhe,
+                                dihe: that.dihe
+                            }
                         }).then(response => that.result = response.data);
                     },
                     up(num) {
