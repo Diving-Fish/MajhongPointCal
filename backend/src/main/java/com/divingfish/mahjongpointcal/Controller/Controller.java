@@ -36,7 +36,7 @@ public class Controller {
             jsonObject.put("message", e.getMessage());
             return jsonObject;
         }
-        if (inner.equals("") && outer.equals("") && dora.equals("") && innerdora.equals("")) {
+        if (inner.equals("") || outer.equals("") || dora.equals("") || innerdora.equals("")) {
             jsonObject.put("status", "error");
             jsonObject.put("message", "请输入必要的数据项");
             return jsonObject;
