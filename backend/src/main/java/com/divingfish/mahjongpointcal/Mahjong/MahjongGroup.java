@@ -110,6 +110,7 @@ public class MahjongGroup {
             jsonObject.put("fu", fu);
             jsonObject.put("perPoint", perPoint);
             jsonObject.put("inner", isInner);
+            jsonObject.put("tsumo", isTsumo);
             jsonObject.put("yakuman", false);
         } else {
             jsonObject.put("yakus", yakumans);
@@ -117,6 +118,7 @@ public class MahjongGroup {
             jsonObject.put("fu", fu);
             jsonObject.put("perPoint", perPoint);
             jsonObject.put("inner", isInner);
+            jsonObject.put("tsumo", isTsumo);
             jsonObject.put("yakuman", true);
         }
         return jsonObject;
