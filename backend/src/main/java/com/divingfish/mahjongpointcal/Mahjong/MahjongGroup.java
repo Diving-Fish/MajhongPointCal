@@ -109,12 +109,14 @@ public class MahjongGroup {
             jsonObject.put("fan", fan);
             jsonObject.put("fu", fu);
             jsonObject.put("perPoint", perPoint);
+            jsonObject.put("inner", isInner);
             jsonObject.put("yakuman", false);
         } else {
             jsonObject.put("yakus", yakumans);
             jsonObject.put("fan", yakuman * 13);
             jsonObject.put("fu", fu);
             jsonObject.put("perPoint", perPoint);
+            jsonObject.put("inner", isInner);
             jsonObject.put("yakuman", true);
         }
         return jsonObject;
@@ -620,7 +622,7 @@ public class MahjongGroup {
 
     //   20 - 小三
     private void checkYaku20() {
-        if (type != 0) return;
+            if (type != 0) return;
         for (int i = 0; i < mianzis.size(); i++) {
             for (int j = i + 1; j < mianzis.size(); j++) {
                 Mianzi a = mianzis.get(i), b = mianzis.get(j);
