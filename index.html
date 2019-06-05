@@ -204,10 +204,8 @@
                     send() {
                         console.log
                         let that = this;
-                        axios({
-                            method: "get",
-                            url: "http://47.100.50.175:8080/cal",
-                            data: {
+                        axios.get("http://47.100.50.175:8080/cal", {
+                            data : {
                                 inner: that.inner,
                                 outer: that.outer,
                                 dora: that.dora,
