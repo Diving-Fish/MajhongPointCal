@@ -9,6 +9,7 @@ public class MahjongTransfer {
     private List<Integer> innerTiles;
     private List<Integer> otherTiles; // dora indicate tile.
     private List<Mianzi> outerTiles;
+    private List<Integer> consumedTiles;
     private int ronTile;
     private List<Integer> manns;
     private List<Integer> pinns;
@@ -25,7 +26,7 @@ public class MahjongTransfer {
         this.innerTiles = innerTiles;
         this.outerTiles = outerTiles;
         this.otherTiles = otherTiles;
-        this.ronTile = ronTile;
+        this.ronTile = (ronTile % 10 == 0) ? ronTile + 5 : ronTile;
         checkTiles();
         manns = new ArrayList<>();
         pinns = new ArrayList<>();
@@ -65,6 +66,7 @@ public class MahjongTransfer {
             list.addAll(m.toList());
         }
         list.addAll(otherTiles);
+        consumedTiles = list;
         Map<Integer, Integer> map = arrayToMap(list);
         for (Integer key : map.keySet()) {
             if (map.get(key) > 4) throw new MahjongNumberException();
@@ -209,7 +211,7 @@ public class MahjongTransfer {
         Set<List<Integer>> temp = splitTiles(addTiles);
         for (List<Integer> a: temp) {
             for (List<Integer> b: prev) {
-                result.add(concat(b, a));
+                result.add(concat(new ArrayList<>(b), new ArrayList<>(a)));
             }
         }
         return result;
@@ -224,8 +226,49 @@ public class MahjongTransfer {
         return result;
     }
 
+    private MahjongGroup sevenPairs() {
+        if (innerTiles.size() != 14) return null;
+        Map<Integer, Integer> map = arrayToMap(innerTiles);
+        for (int a : map.keySet()) {
+            if (map.get(a) != 2) return null;
+        }
+        MahjongGroup mahjongGroup = new MahjongGroup();
+        mahjongGroup.type = 1;
+        mahjongGroup.tiles = new ArrayList<>(innerTiles);
+        Collections.sort(mahjongGroup.tiles);
+        return mahjongGroup;
+    }
+
+    public MahjongGroup thirteenOrphans() {
+        if (innerTiles.size() != 14) return null;
+        List<Integer> tiles = Arrays.asList(new Integer[]{11, 19, 21, 29, 31, 39, 41, 42, 43, 44, 45, 46, 47});
+        List<Integer> innerCopy = new ArrayList<>(innerTiles);
+        for (Integer tile : tiles) {
+            innerCopy.remove(tile);
+        }
+        if (innerCopy.size() != 1) return null;
+        if (tiles.indexOf(innerCopy.get(0)) == -1) return null;
+        MahjongGroup mahjongGroup = new MahjongGroup();
+        mahjongGroup.type = 2;
+        mahjongGroup.tiles = new ArrayList<>(innerTiles);
+        Collections.sort(mahjongGroup.tiles);
+        return mahjongGroup;
+    }
+
     public Set<MahjongGroup> toMahjongGroup() {
         Set<MahjongGroup> mahjongGroups = new HashSet<>();
+        MahjongGroup sevenPairs = sevenPairs();
+        if (sevenPairs != null) {
+            sevenPairs.ronTile = ronTile;
+            sevenPairs.aka = aka;
+            mahjongGroups.add(sevenPairs);
+        }
+        MahjongGroup thirteenOrphans = thirteenOrphans();
+        if (thirteenOrphans != null) {
+            thirteenOrphans.ronTile = ronTile;
+            thirteenOrphans.aka = aka;
+            mahjongGroups.add(thirteenOrphans);
+        }
         Set<List<Integer>> innerLists = finalTiles();
         for (List<Integer> list : innerLists) {
             MahjongGroup mahjongGroup = new MahjongGroup();
@@ -242,6 +285,7 @@ public class MahjongTransfer {
             mahjongGroup.mianzis.addAll(outerTiles);
             mahjongGroup.ronTile = ronTile;
             mahjongGroup.aka = this.aka;
+            mahjongGroup.consumedTiles = consumedTiles;
             mahjongGroups.add(mahjongGroup);
         }
         return mahjongGroups;

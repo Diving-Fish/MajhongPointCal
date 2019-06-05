@@ -1,5 +1,6 @@
 package com.divingfish.mahjongpointcal.Mahjong;
 
+import com.divingfish.mahjongpointcal.Exceptions.YakuException;
 import net.sf.json.JSONObject;
 
 import java.util.*;
@@ -22,8 +23,8 @@ public class MahjongGroup {
     public int placeWind;
 
     public void setWind(int placeWind, int selfWind) {
-        placeWind = placeWind;
-        selfWind = selfWind;
+        this.placeWind = placeWind;
+        this.selfWind = selfWind;
     }
 
     public boolean isYifa;
@@ -55,6 +56,7 @@ public class MahjongGroup {
     public int perPoint;
 
     // procedure
+    public List<Integer> consumedTiles;
     public List<Integer> tiles;
     public int ronType; // 0: 两面,  1：双碰,  2: 单骑、坎张、边张
     public boolean isInner;
@@ -65,6 +67,13 @@ public class MahjongGroup {
 
     private Set<Integer> genRonType() {
         Set<Integer> set = new HashSet<>();
+        if (type == 2) {
+            set.add(0);
+            return set;
+        } else if (type == 1) {
+            set.add(2);
+            return set;
+        }
         for (Mianzi m : mianzis) {
             if (m.type == 0 && m.status == 0) {
                 if (ronTile == m.startTile) {
@@ -95,20 +104,32 @@ public class MahjongGroup {
 
     public JSONObject getjson() {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("yakus", yakus);
-        jsonObject.put("fan", fan);
-        jsonObject.put("fu", fu);
-        jsonObject.put("perPoint", perPoint);
+        if (yakuman == 0) {
+            jsonObject.put("yakus", yakus);
+            jsonObject.put("fan", fan);
+            jsonObject.put("fu", fu);
+            jsonObject.put("perPoint", perPoint);
+            jsonObject.put("yakuman", false);
+        } else {
+            jsonObject.put("yakus", yakumans);
+            jsonObject.put("fan", yakuman * 13);
+            jsonObject.put("fu", fu);
+            jsonObject.put("perPoint", perPoint);
+            jsonObject.put("yakuman", true);
+        }
         return jsonObject;
     }
 
-    public void init() {
-        tiles = new ArrayList<>();
-        for (Mianzi m : mianzis) {
-            tiles.addAll(m.toList());
+    public void init() throws YakuException {
+        if (type == 0) {
+            tiles = new ArrayList<>();
+            for (Mianzi m : mianzis) {
+                tiles.addAll(m.toList());
+            }
+            tiles.add(duizi);
+            tiles.add(duizi);
         }
-        tiles.add(duizi);
-        tiles.add(duizi);
+        consumedTiles.remove(new Integer(ronTile));
         setInner();
         int fan_temp = 0;
         int fu_temp = 0;
@@ -117,6 +138,8 @@ public class MahjongGroup {
         Set<Integer> ronTypeSet = genRonType();
         for (int ronType: ronTypeSet) {
             this.yakus = new ArrayList<>();
+            this.yakumans = new ArrayList<>();
+            yakuman = 0;
             fan = 0;
             this.ronType = ronType;
             checkAllYakus();
@@ -171,6 +194,14 @@ public class MahjongGroup {
 
     private void calFu() {
         int difu = 20;
+        if (type == 2) {
+            fu = 30;
+            return;
+        }
+        if (type == 1) {
+            fu = 25;
+            return;
+        }
         if (yakus.contains(4) && yakus.contains(3)) {
             fu = 20;
             return;
@@ -220,7 +251,7 @@ public class MahjongGroup {
         }
     }
 
-    private void checkAllYakus() {
+    private void checkAllYakus() throws YakuException {
         checkYaku1();
         checkYaku2();
         checkYaku3();
@@ -247,21 +278,45 @@ public class MahjongGroup {
         checkYaku24();
         checkYaku25();
         checkYaku26();
+        checkYaku27();
+        checkYaku28();
+        checkYaku29();
+        checkYaku30();
+        checkYaku31();
+        checkYaku32();
+        checkYaku33();
+        checkYaku34();
+        checkYaku35();
+        checkYaku36();
+        checkYaku37();
+        checkYaku38();
+        checkYaku39();
+        checkYaku40();
+        checkYaku41();
+        checkDora();
     }
 
     //    1 - 立直
-    private void checkYaku1() {
-        if (isInner && reached) {
-            this.yakus.add(1);
-            this.fan += 1;
+    private void checkYaku1() throws YakuException {
+        if (reached) {
+            if (!isInner) {
+                throw new YakuException("非门前清状态下无法立直！");
+            } else {
+                this.yakus.add(1);
+                this.fan += 1;
+            }
         }
     }
 
     //    2 - 一发
-    private void checkYaku2() {
-        if (isInner && reached && isYifa) {
-            this.yakus.add(2);
-            this.fan += 1;
+    private void checkYaku2() throws YakuException {
+        if (isYifa) {
+            if (!reached) {
+                throw new YakuException("非立直状态下无法一发！");
+            } else {
+                this.yakus.add(2);
+                this.fan += 1;
+            }
         }
     }
 
@@ -275,6 +330,7 @@ public class MahjongGroup {
 
     //    4 - 平和
     private void checkYaku4() {
+        if (type != 0) return;
         for (Mianzi mz : mianzis) {
             if (mz.type != 0) return;
         }
@@ -298,6 +354,7 @@ public class MahjongGroup {
 
     //    6 - 一杯口
     private void checkYaku6() {
+        if (type != 0) return;
         if (!isInner) return;
         for (int i = 0; i < mianzis.size() - 1; i++) {
             Mianzi a = mianzis.get(i);
@@ -312,6 +369,7 @@ public class MahjongGroup {
 
     //    7 - 役牌
     private void checkYaku7() {
+        if (type != 0) return;
         checkYaku71();
         checkYaku72();
         checkYaku73();
@@ -321,7 +379,7 @@ public class MahjongGroup {
 
     private void checkYaku71() {
         for (Mianzi m : mianzis) {
-            if (m.type == 1 && m.startTile == placeWind + 41) {
+            if (m.type >= 1 && m.startTile == placeWind + 41) {
                 this.yakus.add(71);
                 this.fan += 1;
             }
@@ -330,7 +388,7 @@ public class MahjongGroup {
 
     private void checkYaku72() {
         for (Mianzi m : mianzis) {
-            if (m.type == 1 && m.startTile == selfWind + 41) {
+            if (m.type >= 1 && m.startTile == selfWind + 41) {
                 this.yakus.add(72);
                 this.fan += 1;
             }
@@ -340,7 +398,7 @@ public class MahjongGroup {
 
     private void checkYaku73() {
         for (Mianzi m : mianzis) {
-            if (m.type == 1 && m.startTile == 45) {
+            if (m.type >= 1 && m.startTile == 45) {
                 this.yakus.add(73);
                 this.fan += 1;
             }
@@ -350,7 +408,7 @@ public class MahjongGroup {
 
     private void checkYaku74() {
         for (Mianzi m : mianzis) {
-            if (m.type == 1 && m.startTile == 46) {
+            if (m.type >= 1 && m.startTile == 46) {
                 this.yakus.add(74);
                 this.fan += 1;
             }
@@ -360,7 +418,7 @@ public class MahjongGroup {
 
     private void checkYaku75() {
         for (Mianzi m : mianzis) {
-            if (m.type == 1 && m.startTile == 47) {
+            if (m.type >= 1 && m.startTile == 47) {
                 this.yakus.add(75);
                 this.fan += 1;
             }
@@ -369,52 +427,85 @@ public class MahjongGroup {
 
 
     //    8 - 海底
-    private void checkYaku8() {
-        if (isHaidi & isTsumo) {
-            this.yakus.add(8);
-            this.fan += 1;
+    private void checkYaku8() throws YakuException {
+        if (isHaidi) {
+            if (!isTsumo) {
+                throw new YakuException("非自摸情况下无法海底！");
+            } else {
+                this.yakus.add(8);
+                this.fan += 1;
+            }
         }
     }
 
     //    9 - 河底
-    private void checkYaku9() {
-        if (isHedi & !isTsumo) {
+    private void checkYaku9() throws YakuException {
+        if (isHedi) {
+            if (isTsumo) {
+                throw new YakuException("自摸情况下无法河底！");
+            } else if (isYifa) {
+                throw new YakuException("一发无法和河底复合！");
+            }
             this.yakus.add(9);
             this.fan += 1;
         }
     }
 
     //   10 - 抢杠
-    private void checkYaku10() {
-        if (isQiangGang & !isTsumo) {
+    private void checkYaku10() throws YakuException {
+        if (isQiangGang) {
+            if (isTsumo) {
+                throw new YakuException("枪杠情况下无法自摸！");
+            } else if (consumedTiles.contains(ronTile)) {
+                throw new YakuException("枪杠牌无法被杠出！");
+            }
             this.yakus.add(10);
             this.fan += 1;
         }
     }
 
     //   11 - 岭上
-    private void checkYaku11() {
-        if (isLingshang & isTsumo) {
+    private void checkYaku11() throws YakuException {
+        if (isLingshang) {
+            if (!isTsumo) {
+                throw new YakuException("岭上开花必须自摸！");
+            } else {
+                boolean flag = false;
+                for (Mianzi m : mianzis) {
+                    if (m.type == 2) flag = true;
+                }
+                if (!flag) throw new YakuException("岭上开花必须有杠材！");
+            }
             this.yakus.add(11);
             this.fan += 1;
         }
     }
 
     //   12 - 两立直
-    private void checkYaku12() {
-        if (isWReach & reached) {
+    private void checkYaku12() throws YakuException {
+        if (isWReach) {
+            if (!reached) {
+                throw new YakuException("双立直应处于立直状态！");
+            } else if (isQiangGang) {
+                throw new YakuException("双立直无法复合枪杠！（为什么呢？）");
+            }
             this.yakus.add(12);
+            this.yakus.remove(new Integer(1));
             this.fan += 1;
         }
     }
 
     //   13 - 七对子
     private void checkYaku13() {
-        // ...
+        if (type == 1) {
+            this.yakus.add(13);
+            fan += 2;
+        }
     }
 
     //   14 - 一气
     private void checkYaku14() {
+        if (type != 0) return;
         for (int i = 0; i < mianzis.size(); i++) {
             for (int j = i + 1; j < mianzis.size(); j++) {
                 for (int k = j + 1; k < mianzis.size(); k++) {
@@ -437,6 +528,7 @@ public class MahjongGroup {
 
     //   15 - 三色
     private void checkYaku15() {
+        if (type != 0) return;
         for (int i = 0; i < mianzis.size(); i++) {
             for (int j = i + 1; j < mianzis.size(); j++) {
                 for (int k = j + 1; k < mianzis.size(); k++) {
@@ -459,6 +551,7 @@ public class MahjongGroup {
 
     //   16 - 全带
     private void checkYaku16() {
+        if (type != 0) return;
         if (duizi % 10 != 1 && duizi % 10 != 9 && duizi < 40) return;
         for (Mianzi m: mianzis) {
             if (m.type == 0) {
@@ -474,6 +567,7 @@ public class MahjongGroup {
 
     //   17 - 三色同刻
     private void checkYaku17() {
+        if (type != 0) return;
         for (int i = 0; i < mianzis.size(); i++) {
             for (int j = i + 1; j < mianzis.size(); j++) {
                 for (int k = j + 1; k < mianzis.size(); k++) {
@@ -494,6 +588,7 @@ public class MahjongGroup {
 
     //   18 - 三暗
     private void checkYaku18() {
+        if (type != 0) return;
         for (int i = 0; i < mianzis.size(); i++) {
             for (int j = i + 1; j < mianzis.size(); j++) {
                 for (int k = j + 1; k < mianzis.size(); k++) {
@@ -515,6 +610,7 @@ public class MahjongGroup {
 
     //   19 - 对对
     private void checkYaku19() {
+        if (type != 0) return;
         for (Mianzi m : mianzis) {
             if (m.type == 0) return;
         }
@@ -524,6 +620,7 @@ public class MahjongGroup {
 
     //   20 - 小三
     private void checkYaku20() {
+        if (type != 0) return;
         for (int i = 0; i < mianzis.size(); i++) {
             for (int j = i + 1; j < mianzis.size(); j++) {
                 Mianzi a = mianzis.get(i), b = mianzis.get(j);
@@ -546,10 +643,12 @@ public class MahjongGroup {
         yakus.remove(new Integer(16));
         yakus.add(21);
         if (!isInner) fan += 1;
+        if (type == 1) fan += 2;
     }
 
     //   22 - 三杠子
     private void checkYaku22() {
+        if (type != 0) return;
         for (int i = 0; i < mianzis.size(); i++) {
             for (int j = i + 1; j < mianzis.size(); j++) {
                 for (int k = j + 1; k < mianzis.size(); k++) {
@@ -579,6 +678,7 @@ public class MahjongGroup {
 
     //   24 - 纯全
     private void checkYaku24() {
+        if (type != 0) return;
         if (duizi % 10 != 1 && duizi % 10 != 9 || duizi > 40) return;
         for (Mianzi m: mianzis) {
             if (m.type == 0) {
@@ -594,6 +694,7 @@ public class MahjongGroup {
 
     //   25 - 二杯
     private void checkYaku25() {
+        if (type != 0) return;
         if (!isInner) return;
         if ((mianzis.get(0).type == mianzis.get(1).type && mianzis.get(0).type == 0 && mianzis.get(1).startTile == mianzis.get(0).startTile)
             && (mianzis.get(3).type == mianzis.get(2).type && mianzis.get(3).type == 0 && mianzis.get(3).startTile == mianzis.get(2).startTile)) {
@@ -617,11 +718,15 @@ public class MahjongGroup {
 
     //   27 - 国士无双
     private void checkYaku27() {
-        // ...
+        if (type == 2) {
+            yakuman += 1;
+            yakumans.add(27);
+        }
     }
 
     //   28 - 大三元
     private void checkYaku28() {
+        if (type != 0) return;
         for (int i = 0; i < mianzis.size(); i++) {
             for (int j = i + 1; j < mianzis.size(); j++) {
                 for (int k = j + 1; k < mianzis.size(); k++) {
@@ -632,6 +737,7 @@ public class MahjongGroup {
                         if (Arrays.equals(array, new int[] {45, 46, 47})) {
                             yakuman += 1;
                             yakumans.add(28);
+                            return;
                         }
                     }
                 }
@@ -640,17 +746,193 @@ public class MahjongGroup {
     }
 
     //   29 - 四暗刻
+    private void checkYaku29() {
+        if (type != 0) return;
+        Mianzi a = mianzis.get(0);
+        Mianzi b = mianzis.get(1);
+        Mianzi c = mianzis.get(2);
+        Mianzi d = mianzis.get(3);
+        if (a.type >= 1 && b.type >= 1 && c.type >= 1 && d.type >= 1 &&
+                a.status == 0 && b.status == 0 && c.status == 0 && d.status == 0) {
+            if (ronType == 1 && isTsumo) {
+                yakuman += 1;
+                yakumans.add(29);
+            }
+        }
+    }
+
     //   30 - 小四喜
+    private void checkYaku30() {
+        if (type != 0) return;
+        for (int i = 0; i < mianzis.size(); i++) {
+            for (int j = i + 1; j < mianzis.size(); j++) {
+                for (int k = j + 1; k < mianzis.size(); k++) {
+                    Mianzi a = mianzis.get(i), b = mianzis.get(j), c = mianzis.get(k);
+                    if (a.type >= 1 && b.type >= 1 && c.type >= 1) {
+                        int[] array = {a.startTile, b.startTile, c.startTile, duizi};
+                        Arrays.sort(array);
+                        if (Arrays.equals(array, new int[] {41, 42, 43, 44})) {
+                            yakuman += 1;
+                            yakumans.add(30);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     //   31 - 字一色
+    private void checkYaku31() {
+        for (int tile : tiles) {
+            if (tile < 40) return;
+        }
+        yakuman += 1;
+        yakumans.add(31);
+    }
+
     //   32 - 绿一色
+    private void checkYaku32() {
+        if (type != 0) return;
+        for (int tile : tiles) {
+            if (tile != 32 && tile != 33 && tile != 34 && tile != 36 && tile != 38 && tile != 46) return;
+        }
+        yakuman += 1;
+        yakumans.add(32);
+    }
+
     //   33 - 清老头
+    private void checkYaku33() {
+        if (type != 0) return;
+        for (int tile : tiles) {
+            if (tile % 10 != 1 && tile % 10 != 9 || tile > 40) return;
+        }
+        yakuman += 1;
+        yakumans.add(33);
+    }
+
     //   34 - 九莲宝灯
+    private void checkYaku34() {
+
+    }
+
     //   35 - 四杠子
+    private void checkYaku35() {
+        if (type != 0) return;
+        for (Mianzi m : mianzis) {
+            if (m.type != 2) return;
+        }
+        yakuman += 1;
+        yakumans.add(35);
+    }
+
     //   36 - 天和
+    private void checkYaku36() throws YakuException {
+        if (isTianhe) {
+            if (!isInner) {
+                throw new YakuException("天和必须门前清！");
+            } else if (!isTsumo) {
+                throw new YakuException("天和必须自摸！");
+            } else if (reached) {
+                throw new YakuException("天和情况下不应立直！");
+            } else {
+                for (Mianzi m : mianzis) {
+                    if (m.type == 2) throw new YakuException("天和情况下无法暗杠！");
+                }
+            }
+            yakuman += 1;
+            yakumans.add(36);
+        }
+    }
+
     //   37 - 地和
+    private void checkYaku37() throws YakuException {
+        if (isDihe) {
+            if (!isInner) {
+                throw new YakuException("地和必须门前清！");
+            } else if (!isTsumo) {
+                throw new YakuException("地和必须自摸！");
+            } else if (reached) {
+                throw new YakuException("地和情况下不应立直！");
+            } else if (isTianhe) {
+                throw new YakuException("天地和无法复合！");
+            } else {
+                for (Mianzi m : mianzis) {
+                    if (m.type == 2) throw new YakuException("地和情况下无法暗杠！");
+                }
+            }
+            yakuman += 1;
+            yakumans.add(37);
+        }
+    }
+
     //   38 - 国士无双十三面
+    private void checkYaku38() {
+        if (type != 2) return;
+        int a = 0;
+        for (int tile : tiles) {
+            if (ronTile == tile) a += 1;
+        }
+        if (a == 2) {
+            yakumans.remove(new Integer(27));
+            yakumans.add(38);
+            yakuman += 1;
+        }
+    }
+
     //   39 - 大四喜
+    private void checkYaku39() {
+        if (type != 0) return;
+        Mianzi a = mianzis.get(0);
+        Mianzi b = mianzis.get(1);
+        Mianzi c = mianzis.get(2);
+        Mianzi d = mianzis.get(3);
+        int[] e = {a.startTile, b.startTile, c.startTile, d.startTile};
+        Arrays.sort(e);
+        if (Arrays.equals(e, new int[] {41, 42, 43, 44})) {
+            yakumans.add(39);
+            yakuman += 2;
+        }
+    }
+
     //   40 - 四暗刻单骑
+    private void checkYaku40() {
+        if (type != 0) return;
+        Mianzi a = mianzis.get(0);
+        Mianzi b = mianzis.get(1);
+        Mianzi c = mianzis.get(2);
+        Mianzi d = mianzis.get(3);
+        if (a.type >= 1 && b.type >= 1 && c.type >= 1 && d.type >= 1 &&
+                a.status == 0 && b.status == 0 && c.status == 0 && d.status == 0) {
+            if (ronType == 2) {
+                yakumans.add(40);
+                yakuman += 2;
+            }
+        }
+    }
+
     //   41 - 纯正九莲宝灯
+    private void checkYaku41() {
+        // ...
+    }
+
     //   42 - 宝牌计算
+    private void checkDora() {
+        if (fan == 0) return;
+        int _d = 0, _ad = aka, _id = 0;
+        for (int tile : tiles) {
+            for (int d: dora) {
+                if (tile == d) _d += 1;
+            }
+            if (reached) {
+                for (int id: innerDora) {
+                    if (tile == id) _id += 1;
+                }
+            }
+        }
+        fan += _d + _ad + _id;
+        if (_d != 0)  yakus.add(100 + _d);
+        if (_ad != 0) yakus.add(200 + _ad);
+        if (_id != 0) yakus.add(300 + _id);
+    }
 }
