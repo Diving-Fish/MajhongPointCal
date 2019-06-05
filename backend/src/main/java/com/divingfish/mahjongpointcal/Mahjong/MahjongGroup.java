@@ -275,7 +275,7 @@ public class MahjongGroup {
         checkYaku38();
         checkYaku39();
         checkYaku40();
-        checkYaku41();
+        //checkYaku41();
         checkDora();
     }
 
@@ -804,7 +804,22 @@ public class MahjongGroup {
 
     //   34 - 九莲宝灯
     private void checkYaku34() {
-
+        if (!yakus.contains(26)) return;
+        List<Integer> list = Arrays.asList(new Integer[]{1, 1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 9});
+        List<Integer> tilesCopy = new ArrayList<>(tiles);
+        int color = tiles.get(0) / 10;
+        for (int i : list) {
+            tilesCopy.remove(new Integer(color * 10 + i));
+        }
+        if (tilesCopy.size() == 1) {
+            if (ronTile == tilesCopy.get(0)) {
+                yakuman += 2;
+                yakumans.add(41);
+            } else {
+                yakuman += 1;
+                yakumans.add(34);
+            }
+        }
     }
 
     //   35 - 四杠子
