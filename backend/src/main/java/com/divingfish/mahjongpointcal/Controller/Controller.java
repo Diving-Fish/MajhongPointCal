@@ -82,13 +82,18 @@ public class Controller {
             }
             jsonObjects.add(mahjongGroup.getjson());
         }
-        int perPoint = 0, fan = 0, index = 0;
+        int perPoint = 0, fan = 0, index = 0, fu = 0;
         for (int i = 0; i < jsonObjects.size(); i++) {
             JSONObject j = jsonObjects.get(i);
             if (j.getInt("perPoint") == perPoint) {
                 if (j.getInt("fan") > fan) {
                     index = i;
                     fan = j.getInt("fan");
+                } else if (j.getInt("fan") == fan) {
+                    if (j.getInt("fu") > fu) {
+                        index = i;
+                        fu = j.getInt("fu");
+                    }
                 }
             } else if (j.getInt("perPoint") > perPoint) {
                 index = i;
