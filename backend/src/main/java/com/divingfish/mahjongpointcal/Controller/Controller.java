@@ -89,6 +89,7 @@ public class Controller {
                 if (j.getInt("fan") > fan) {
                     index = i;
                     fan = j.getInt("fan");
+                    fu = j.getInt("fu");
                 } else if (j.getInt("fan") == fan) {
                     if (j.getInt("fu") > fu) {
                         index = i;
@@ -98,6 +99,7 @@ public class Controller {
             } else if (j.getInt("perPoint") > perPoint) {
                 index = i;
                 fan = j.getInt("fan");
+                fu = j.getInt("fu");
                 perPoint = j.getInt("perPoint");
             }
         }

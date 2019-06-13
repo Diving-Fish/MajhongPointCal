@@ -157,6 +157,13 @@ public class MahjongGroup {
                     fan_temp = this.fan;
                     fu_temp = this.fu;
                     score_temp = score;
+                } else if (fan == fan_temp) {
+                    if (fu > fu_temp) {
+                        yakus_temp = this.yakus;
+                        fan_temp = this.fan;
+                        fu_temp = this.fu;
+                        score_temp = score;
+                    }
                 }
             } else if (score > score_temp) {
                 yakus_temp = this.yakus;
