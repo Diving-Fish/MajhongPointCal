@@ -101,6 +101,7 @@ public class MahjongTransfer {
 
     private boolean subShunzi(List<Integer> tiles, int index) {
         int a = tiles.get(index);
+        if (a >= 40) return false;
         return !((tiles.indexOf(a+1) == -1) || (tiles.indexOf(a+2) == -1));
     }
 

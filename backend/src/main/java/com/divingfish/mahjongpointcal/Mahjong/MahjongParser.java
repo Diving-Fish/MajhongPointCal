@@ -83,7 +83,7 @@ public class MahjongParser {
                     list.remove(0);
                 }
                 Collections.sort(list);
-                if (list.get(0) == list.get(1) - 1 && list.get(0) == list.get(2) - 2) {
+                if (list.get(0) == list.get(1) - 1 && list.get(0) == list.get(2) - 2 && list.get(0) < 40) {
                     mianzis.add(new Mianzi(list.get(0), 1, 0, aka));
                 } else if (list.get(0).equals(list.get(1)) && list.get(0).equals(list.get(2))) {
                     mianzis.add(new Mianzi(list.get(0), 1, 1, aka));
