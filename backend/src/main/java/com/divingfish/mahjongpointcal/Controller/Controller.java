@@ -65,7 +65,7 @@ public class Controller {
             parser = new MahjongParser(inner, strings, ronTile, dora, innerdora, 0, reach, tsumo);
         } catch (MahjongStringException e) {
             jsonObject.put("status", "error");
-            jsonObject.put("message", "invalid query");
+            jsonObject.put("message", "查询有误。牌的数量是否不正确，或牌输入格式有误？");
             return jsonObject;
         }
         List<JSONObject> jsonObjects = new ArrayList<>();
@@ -104,7 +104,7 @@ public class Controller {
             }
         }
         if (jsonObjects.size() == 0) {
-            jsonObject.put("status", 200);
+            jsonObject.put("status", "error");
             jsonObject.put("message", "此牌无法和牌");
         } else {
             jsonObject.put("status", 200);
